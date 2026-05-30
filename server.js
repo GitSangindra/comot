@@ -455,14 +455,14 @@ app.post('/api/agent/trigger', (req, res) => {
 
 // Setup Telegram Bot
 const TelegramBot = require('node-telegram-bot-api');
-const http = require('http');
+const https = require('https'); // Changed to https for NVIDIA API
 
-// Ollama / Hermes Chat Integration
-const OLLAMA_HOST = 'http://127.0.0.1:11434';
-const HERMES_MODEL = 'hermes3:latest';
+// NVIDIA / Hermes Chat Integration
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+const HERMES_MODEL = 'google/gemma-3n-e4b-it';
 const chatHistories = new Map(); // Per-user conversation memory
 
-const HERMES_SYSTEM_PROMPT = `Kamu adalah Hermes, AI Agent strategis yang beroperasi di dalam ekosistem COMOT (Construction Material Order & Tracking). Kamu berjalan di VPS Tencent Cloud menggunakan Llama 3.2 melalui Ollama.
+const HERMES_SYSTEM_PROMPT = `Kamu adalah Hermes, AI Agent strategis yang beroperasi di dalam ekosistem COMOT (Construction Material Order & Tracking). Kamu berjalan menggunakan Google Gemma 3 via NVIDIA Cloud API.
 
 Konteks COMOT:
 - COMOT adalah sistem logistik konstruksi otonom untuk proyek residensial di Yogyakarta.
@@ -485,11 +485,15 @@ Gaya komunikasi:
 - Jawab ringkas dan to-the-point (maks 300 kata) kecuali diminta detail`;
 
 /**
- * Send a chat completion request to Ollama (Hermes model)
+ * Send a chat completion request to NVIDIA API (Gemma 3 model)
  * Returns the assistant's response text
  */
 function chatWithHermes(userId, userMessage) {
   return new Promise((resolve, reject) => {
+    if (!NVIDIA_API_KEY) {
+      return reject(new Error('NVIDIA_API_KEY tidak dikonfigurasi di server.'));
+    }
+
     // Get or initialize chat history for this user
     if (!chatHistories.has(userId)) {
       chatHistories.set(userId, []);
@@ -514,13 +518,12 @@ function chatWithHermes(userId, userMessage) {
       model: HERMES_MODEL,
       messages: messages,
       stream: false,
-      options: {
-        temperature: 0.7,
-        num_predict: 512
-      }
+      max_tokens: 512,
+      temperature: 0.2,
+      top_p: 0.7
     });
 
-    const url = new URL(OLLAMA_HOST + '/api/chat');
+    const url = new URL('https://integrate.api.nvidia.com/v1/chat/completions');
     const options = {
       hostname: url.hostname,
       port: url.port,
@@ -528,23 +531,27 @@ function chatWithHermes(userId, userMessage) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${NVIDIA_API_KEY}`,
         'Content-Length': Buffer.byteLength(payload)
       },
-      timeout: 120000 // 2 minute timeout for slow inference
+      timeout: 30000 // 30 seconds timeout, NVIDIA API is usually very fast
     };
 
-    const req = http.request(options, (res) => {
+    const req = https.request(options, (res) => {
       let data = '';
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
         try {
+          if (res.statusCode !== 200) {
+            return reject(new Error(`API Error ${res.statusCode}: ${data}`));
+          }
           const parsed = JSON.parse(data);
-          const assistantMsg = parsed.message?.content || 'Maaf, saya tidak bisa memproses permintaan saat ini.';
+          const assistantMsg = parsed.choices?.[0]?.message?.content || 'Maaf, saya tidak bisa memproses permintaan saat ini.';
           // Save assistant response to history
           history.push({ role: 'assistant', content: assistantMsg });
           resolve(assistantMsg);
         } catch (e) {
-          reject(new Error('Gagal parsing respons Ollama: ' + e.message));
+          reject(new Error('Gagal parsing respons NVIDIA API: ' + e.message));
         }
       });
     });
@@ -846,7 +853,7 @@ if (hermesToken) {
 
   hermesBot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    hermesBot.sendMessage(chatId, `⚡ <b>Hermes AI Strategic Agent Aktif.</b>\n\nSaya adalah asisten otonom Anda yang menganalisis supply chain COMOT. Saya berjalan menggunakan Llama 3.2 8B di infrastruktur VPS Anda.\n\nKetik pesan apa saja untuk mulai berdiskusi, atau ketik <code>/reset</code> untuk membersihkan konteks percakapan saat ini.`, { parse_mode: 'HTML' });
+    hermesBot.sendMessage(chatId, `⚡ <b>Hermes AI Strategic Agent Aktif.</b>\n\nSaya adalah asisten otonom Anda yang menganalisis supply chain COMOT. Saya berjalan menggunakan Google Gemma 3 (4B) via NVIDIA Cloud API.\n\nKetik pesan apa saja untuk mulai berdiskusi, atau ketik <code>/reset</code> untuk membersihkan konteks percakapan saat ini.`, { parse_mode: 'HTML' });
   });
 
   // /reset command - Clear chat history
@@ -885,7 +892,7 @@ if (hermesToken) {
       })
       .catch((err) => {
         console.error('Hermes chat error:', err.message);
-        hermesBot.sendMessage(chatId, `❌ <b>Sistem Kognitif Hermes Mengalami Gangguan.</b>\n\n<i>${err.message}</i>\n\nMohon periksa koneksi ke Ollama di sisi VPS.`, { parse_mode: 'HTML' });
+        hermesBot.sendMessage(chatId, `❌ <b>Sistem Kognitif Hermes Mengalami Gangguan.</b>\n\n<i>${err.message}</i>\n\nMohon periksa status API Key atau koneksi jaringan VPS.`, { parse_mode: 'HTML' });
       });
   });
 
