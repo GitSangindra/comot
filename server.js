@@ -187,8 +187,10 @@ function getInventoryStatus() {
 
 // Global state for Telegram broadcasts
 let bot = null;
+let hermesBot = null;
 let lastChatId = null;
 const token = process.env.TELEGRAM_BOT_TOKEN;
+const hermesToken = process.env.HERMES_BOT_TOKEN;
 
 // Order simulator state machine
 function updateActiveOrders() {
@@ -453,15 +455,119 @@ app.post('/api/agent/trigger', (req, res) => {
 
 // Setup Telegram Bot
 const TelegramBot = require('node-telegram-bot-api');
+const http = require('http');
+
+// Ollama / Hermes Chat Integration
+const OLLAMA_HOST = 'http://127.0.0.1:11434';
+const HERMES_MODEL = 'hermes3:latest';
+const chatHistories = new Map(); // Per-user conversation memory
+
+const HERMES_SYSTEM_PROMPT = `Kamu adalah Hermes, AI Agent strategis yang beroperasi di dalam ekosistem COMOT (Construction Material Order & Tracking). Kamu berjalan di VPS Tencent Cloud menggunakan Llama 3.2 melalui Ollama.
+
+Konteks COMOT:
+- COMOT adalah sistem logistik konstruksi otonom untuk proyek residensial di Yogyakarta.
+- Pengguna yang chat denganmu adalah tim manajemen atau pemilik proyek (Indra).
+- Kamu harus menjadi rekan diskusi yang proaktif, asertif, dan berwawasan luas mengenai rantai pasok dan konstruksi.
+
+Konteks COMOT:
+- COMOT adalah sistem logistik konstruksi otonom untuk proyek residensial di Yogyakarta
+- Proyek aktif: Rumah_5M (Rp 5 Miliar, Sleman, Yogyakarta)
+- Material utama: Semen Instan (Rp 65.000/sak), Besi 12mm (Rp 95.000/pcs)
+- Kerugian delay: Rp 150 Juta per hari (3% nilai proyek / 100)
+- Supplier utama: QHomeMart Sleman
+- 4 sub-agent: Project Coordinator, Material Forecaster, Procurement Agent, Structured Output Guard
+
+Gaya komunikasi:
+- Jawab dalam Bahasa Indonesia yang profesional tapi santai
+- Jika ditanya tentang konstruksi/material/logistik, berikan jawaban yang kontekstual dengan data COMOT
+- Jika ditanya hal umum, tetap jawab dengan helpful dan ramah
+- Gunakan emoji secukupnya
+- Jawab ringkas dan to-the-point (maks 300 kata) kecuali diminta detail`;
+
+/**
+ * Send a chat completion request to Ollama (Hermes model)
+ * Returns the assistant's response text
+ */
+function chatWithHermes(userId, userMessage) {
+  return new Promise((resolve, reject) => {
+    // Get or initialize chat history for this user
+    if (!chatHistories.has(userId)) {
+      chatHistories.set(userId, []);
+    }
+    const history = chatHistories.get(userId);
+
+    // Add user message to history
+    history.push({ role: 'user', content: userMessage });
+
+    // Keep only last 10 messages to manage context window
+    if (history.length > 10) {
+      history.splice(0, history.length - 10);
+    }
+
+    // Build messages array with system prompt
+    const messages = [
+      { role: 'system', content: HERMES_SYSTEM_PROMPT },
+      ...history
+    ];
+
+    const payload = JSON.stringify({
+      model: HERMES_MODEL,
+      messages: messages,
+      stream: false,
+      options: {
+        temperature: 0.7,
+        num_predict: 512
+      }
+    });
+
+    const url = new URL(OLLAMA_HOST + '/api/chat');
+    const options = {
+      hostname: url.hostname,
+      port: url.port,
+      path: url.pathname,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      },
+      timeout: 120000 // 2 minute timeout for slow inference
+    };
+
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          const assistantMsg = parsed.message?.content || 'Maaf, saya tidak bisa memproses permintaan saat ini.';
+          // Save assistant response to history
+          history.push({ role: 'assistant', content: assistantMsg });
+          resolve(assistantMsg);
+        } catch (e) {
+          reject(new Error('Gagal parsing respons Ollama: ' + e.message));
+        }
+      });
+    });
+
+    req.on('error', (e) => reject(e));
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Timeout: Hermes membutuhkan waktu terlalu lama untuk merespons.'));
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
 
 if (token) {
-  console.log('Initialize Telegram Bot with Token:', token.substring(0, 5) + '...');
+  console.log('Initialize Main Telegram Bot with Token:', token.substring(0, 5) + '...');
   bot = new TelegramBot(token, { polling: true });
 
   bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    lastChatId = chatId; // Save last active chat ID for broadcasts
-    bot.sendMessage(chatId, `👋 <b>Selamat datang di COMOT Logistics Agent Bot!</b>\n\nSaya adalah asisten logistik proyek Anda. Tim lapangan dapat memasukkan data material secara instan dari lokasi konstruksi.\n\n<b>Perintah yang tersedia:</b>\n📝 <code>/catat [proyek] [material] [jumlah] [status]</code>\n<i>Contoh: <code>/catat Rumah_5M semen 50 sak masuk</code></i>\n\n🛒 <code>/beli [material] [jumlah]</code> - Pesan langsung di QHomemart!\n💡 <code>/saran</code> - Rekomendasi & analisis otonom AI (Expert Advisor)\n🚚 <code>/track</code> - Lacak pengiriman & risiko blocking\n📊 <code>/status</code> - Cek stok material\n🧠 <code>/reason</code> - Jalankan analisis Multi-Agent Llama 3.2`, { parse_mode: 'HTML' });
+    lastChatId = chatId;
+    bot.sendMessage(chatId, `👋 <b>Selamat datang di COMOT Logistics Agent Bot!</b>\n\nSaya adalah asisten operasional lapangan Anda.\n\n<b>📋 Perintah Operasional:</b>\n📝 <code>/catat [proyek] [material] [jumlah] [status]</code>\n🛒 <code>/beli [material] [jumlah]</code> - Pesan di QHomemart\n💡 <code>/saran</code> - Analisis AI Procurement Expert\n🚚 <code>/track</code> - Lacak pengiriman\n📊 <code>/status</code> - Cek stok material\n🧠 <code>/reason</code> - Multi-Agent Llama 3.2\n\n<b>🤖 Butuh ngobrol strategis dengan AI?</b>\nSilakan chat langsung dengan <b>@hersum_bot</b> (Hermes AI Agent) untuk konsultasi manajemen rantai pasok.`, { parse_mode: 'HTML' });
   });
 
   // /catat command - robust field log logging with shorthand mapping & unit suffix stripping
@@ -727,10 +833,67 @@ if (token) {
   });
 
   bot.on('polling_error', (error) => {
-    console.error('Telegram polling error:', error.message);
+    console.error('Main Bot Telegram polling error:', error.message);
   });
 } else {
-  console.log('⚠️ Warning: TELEGRAM_BOT_TOKEN environment variable not set. Telegram Bot is disabled.');
+  console.log('⚠️ Warning: TELEGRAM_BOT_TOKEN environment variable not set. Main Telegram Bot is disabled.');
+}
+
+// Initialize Hermes AI Chat Bot separately
+if (hermesToken) {
+  console.log('Initialize Hermes Telegram Bot with Token:', hermesToken.substring(0, 5) + '...');
+  hermesBot = new TelegramBot(hermesToken, { polling: true });
+
+  hermesBot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    hermesBot.sendMessage(chatId, `⚡ <b>Hermes AI Strategic Agent Aktif.</b>\n\nSaya adalah asisten otonom Anda yang menganalisis supply chain COMOT. Saya berjalan menggunakan Llama 3.2 8B di infrastruktur VPS Anda.\n\nKetik pesan apa saja untuk mulai berdiskusi, atau ketik <code>/reset</code> untuk membersihkan konteks percakapan saat ini.`, { parse_mode: 'HTML' });
+  });
+
+  // /reset command - Clear chat history
+  hermesBot.onText(/\/reset/, (msg) => {
+    const chatId = msg.chat.id;
+    chatHistories.delete(chatId);
+    hermesBot.sendMessage(chatId, '🔄 Memori percakapan saat ini telah dibersihkan. Mari mulai analisis baru.', { parse_mode: 'HTML' });
+  });
+
+  // Catch-all: Free-text messages → Chat with Hermes AI
+  hermesBot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    const text = msg.text;
+
+    // Skip if it's a command
+    if (!text || text.startsWith('/')) return;
+
+    // Send typing indicator
+    hermesBot.sendChatAction(chatId, 'typing');
+
+    chatWithHermes(chatId, text)
+      .then((response) => {
+        const safeResponse = response
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        if (safeResponse.length > 4000) {
+          const chunks = safeResponse.match(/[\s\S]{1,4000}/g) || [safeResponse];
+          chunks.forEach((chunk) => {
+            hermesBot.sendMessage(chatId, chunk, { parse_mode: 'HTML' });
+          });
+        } else {
+          hermesBot.sendMessage(chatId, safeResponse, { parse_mode: 'HTML' });
+        }
+      })
+      .catch((err) => {
+        console.error('Hermes chat error:', err.message);
+        hermesBot.sendMessage(chatId, `❌ <b>Sistem Kognitif Hermes Mengalami Gangguan.</b>\n\n<i>${err.message}</i>\n\nMohon periksa koneksi ke Ollama di sisi VPS.`, { parse_mode: 'HTML' });
+      });
+  });
+
+  hermesBot.on('polling_error', (error) => {
+    console.error('Hermes Bot Telegram polling error:', error.message);
+  });
+} else {
+  console.log('⚠️ Warning: HERMES_BOT_TOKEN environment variable not set. Hermes Bot is disabled.');
 }
 
 app.listen(PORT, '0.0.0.0', () => {
