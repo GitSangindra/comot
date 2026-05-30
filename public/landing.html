@@ -138,7 +138,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
+      overflow: visible;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
@@ -187,6 +187,7 @@
       background: linear-gradient(135deg, #ffffff 60%, #9ca3af);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      word-break: break-word;
     }
 
     .slide-content {
@@ -429,8 +430,8 @@
 
     .agent-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1.2fr;
-      gap: 2rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
       width: 100%;
       position: relative;
     }
@@ -487,6 +488,7 @@
 
     .flow-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
       width: 100%;
       justify-content: center;
@@ -531,6 +533,7 @@
 
     .simulator-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
     }
 
@@ -706,43 +709,175 @@
     @media (max-width: 1024px) {
       .slide-content {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
       }
       .slide-right {
         order: -1;
       }
       .slide-wrapper {
-        min-height: 700px;
+        min-height: auto;
       }
     }
 
     @media (max-width: 768px) {
       header {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
+      }
+      .btn-dashboard {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.75rem;
+      }
+      .brand-name {
+        font-size: 1.1rem;
       }
       .presentation-container {
-        margin: 5rem auto 1rem;
-        padding: 0 1rem;
+        margin: 4.5rem auto 1rem;
+        padding: 0 0.5rem;
+        min-height: auto;
       }
       .slide-wrapper {
-        padding: 1.5rem;
-        min-height: 750px;
+        padding: 1.25rem;
+        min-height: auto;
+        border-radius: 12px;
       }
       .slide-title {
-        font-size: 1.75rem;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+      }
+      .slide-tag {
+        font-size: 0.75rem;
       }
       .slide-desc {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+      }
+      .slide-content {
+        gap: 1.25rem;
       }
       .calculator-results {
         grid-template-columns: 1fr;
       }
       .controls-panel {
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1rem;
+        padding-top: 1rem;
+        margin-top: 1rem;
       }
       .stat-row {
         grid-template-columns: 1fr;
+      }
+      .stat-num {
+        font-size: 1.6rem;
+      }
+      .stat-card {
+        padding: 1rem;
+      }
+      .feature-item {
+        gap: 0.5rem;
+      }
+      .feature-text strong {
+        font-size: 0.9rem;
+      }
+      .feature-text p {
+        font-size: 0.85rem;
+      }
+      .feature-list {
+        gap: 0.75rem;
+      }
+      .agent-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .agent-box {
+        padding: 0.75rem;
+      }
+      .agent-name {
+        font-size: 0.8rem;
+      }
+      .agent-task {
+        font-size: 0.75rem;
+      }
+      .flow-widget {
+        padding: 1rem;
+        gap: 0.75rem;
+      }
+      .btn-flow {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.6rem;
+      }
+      .slider-card {
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .slider-title {
+        font-size: 0.85rem;
+      }
+      .slider-value-display {
+        font-size: 1.1rem;
+      }
+      .result-value {
+        font-size: 1rem;
+      }
+      .result-label {
+        font-size: 0.75rem;
+      }
+      .simulator-card {
+        padding: 1rem;
+      }
+      .sim-tab {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.6rem;
+      }
+      .console-box {
+        height: 140px;
+        font-size: 0.7rem;
+        padding: 0.75rem;
+      }
+      .roadmap-step {
+        padding: 0.75rem;
+      }
+      .roadmap-step-title {
+        font-size: 0.85rem;
+      }
+      .roadmap-step-desc {
+        font-size: 0.75rem;
+      }
+      .roadmap-number {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+      }
+      .btn-nav {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+      .indicator {
+        width: 8px;
+        height: 8px;
+      }
+      footer {
+        font-size: 0.75rem;
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .slide-wrapper {
+        padding: 1rem;
+      }
+      .slide-title {
+        font-size: 1.2rem;
+      }
+      .slide-desc {
+        font-size: 0.85rem;
+      }
+      .slider-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+      .btn-dashboard {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.6rem;
       }
     }
 
@@ -880,20 +1015,48 @@
 
     @media (max-width: 768px) {
       .team-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
+      }
+      .team-card {
+        padding: 0.75rem;
+        gap: 0.5rem;
+      }
+      .team-avatar {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+      }
+      .team-name {
+        font-size: 0.85rem;
+      }
+      .team-role {
+        font-size: 0.65rem;
+        margin-bottom: 0.4rem;
+      }
+      .team-desc {
+        font-size: 0.7rem;
+        line-height: 1.35;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
       }
       .team-card {
         flex-direction: row;
         text-align: left;
         align-items: center;
-        padding: 1rem;
-        gap: 1rem;
+        padding: 0.75rem;
+        gap: 0.75rem;
       }
       .team-avatar {
         margin-bottom: 0;
-        width: 60px;
-        height: 60px;
+        width: 44px;
+        height: 44px;
         flex-shrink: 0;
       }
     }
