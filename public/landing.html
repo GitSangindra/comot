@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMOT - Memangkas 3% Kebocoran Profit Konstruksi Melalui Autonomous AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: #0e111a;
+      --primary: #3b82f6; /* Cobalt Blue */
+      --secondary: #8b5cf6; /* Glowing Violet */
+      --success: #10b981; /* Emerald Green */
+      --warning: #f59e0b; /* Amber */
+      --danger: #ef4444; /* Coral Red */
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --font-outfit: 'Outfit', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-inter);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    header {
+      width: 100%;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      background: rgba(7, 9, 14, 0.95);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-box {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .brand-name {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #fff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .btn-dashboard {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-dashboard:hover {
+      background: var(--primary);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* Main Container & Slide Frame */
+    .presentation-container {
+      max-width: 1200px;
+      margin: 6rem auto 2rem;
+      padding: 0 1.5rem;
+      min-height: calc(100vh - 12rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Slide Switcher */
+    .slide-wrapper {
+      position: relative;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      min-height: 520px;
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      height: 100%;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+    }
+
+    /* Standard Slide Typography */
+    .slide-tag {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slide-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--secondary);
+      border-radius: 50%;
+    }
+
+    .slide-title {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 2.2rem;
+      line-height: 1.25;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #ffffff 60%, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .slide-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .slide-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Key Features / Bullet points */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .feature-icon {
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+      color: var(--primary);
+    }
+
+    .feature-text strong {
+      color: var(--text-main);
+      font-family: var(--font-outfit);
+    }
+
+    .feature-text p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .slide-indicators {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .indicator.active {
+      background-color: var(--primary);
+      transform: scale(1.3);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+    }
+
+    .navigation-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-nav {
+      background: #181d2a;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #232a3d;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn-nav.btn-primary-action {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-nav.btn-primary-action:hover {
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Interactive Calculator Slider (Slide 2) */
+    .slider-card {
+      background: #131722;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-title {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .slider-value-display {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--primary);
+    }
+
+    .custom-range {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .custom-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+      transition: transform 0.1s;
+    }
+
+    .custom-range::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .calculator-results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    .result-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .result-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .result-value {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text-main);
+    }
+
+    .result-value.danger {
+      color: var(--danger);
+    }
+
+    .result-value.warning {
+      color: var(--warning);
+    }
+
+    /* 4-Agent Flow Diagram (Slide 4) */
+    .flow-widget {
+      width: 100%;
+      background: #131722;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr;
+      gap: 2rem;
+      width: 100%;
+      position: relative;
+    }
+
+    .agent-box {
+      background: #181e2e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .agent-box.active {
+      border-color: var(--secondary);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
+      background: #1f273d;
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .agent-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--text-muted);
+    }
+
+    .agent-box.active .agent-dot {
+      background-color: var(--secondary);
+      box-shadow: 0 0 8px var(--secondary);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .agent-name {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .agent-task {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .flow-actions {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .btn-flow {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: var(--font-outfit);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-flow:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--text-muted);
+    }
+
+    .btn-flow.active {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
+
+    /* Telegram & B2B SSL Handshake Simulator (Slide 7) */
+    .simulator-card {
+      width: 100%;
+      background: #131722;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .simulator-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .sim-tab {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .sim-tab:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .sim-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .console-box {
+      background: #07090d;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      height: 180px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #38bdf8;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .console-line {
+      margin-bottom: 0.25rem;
+    }
+
+    .console-input {
+      color: #f43f5e;
+    }
+
+    .console-success {
+      color: var(--success);
+    }
+
+    .console-warning {
+      color: var(--warning);
+    }
+
+    /* Roadmap Visuals (Slide 6) */
+    .roadmap-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .roadmap-step {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      position: relative;
+    }
+
+    .roadmap-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: justify-content;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .roadmap-step.active .roadmap-number {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .roadmap-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .roadmap-step-title {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .roadmap-step-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Stat Cards */
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .stat-card {
+      background: #131722;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-num {
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 2.2rem;
+      line-height: 1;
+      color: var(--success);
+    }
+
+    .stat-label {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .stat-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Animation Keyframes */
+    @keyframes pulse {
+      from { transform: scale(1); opacity: 0.8; }
+      to { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* Footer styling */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: rgba(7, 9, 14, 0.98);
+    }
+
+    /* Responsive scaling overrides */
+    @media (max-width: 1024px) {
+      .slide-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .slide-right {
+        order: -1;
+      }
+      .slide-wrapper {
+        min-height: 700px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+      .presentation-container {
+        margin: 5rem auto 1rem;
+        padding: 0 1rem;
+      }
+      .slide-wrapper {
+        padding: 1.5rem;
+        min-height: 750px;
+      }
+      .slide-title {
+        font-size: 1.75rem;
+      }
+      .slide-desc {
+        font-size: 0.95rem;
+      }
+      .calculator-results {
+        grid-template-columns: 1fr;
+      }
+      .controls-panel {
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .stat-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Team Section Styles */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .team-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .team-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .team-card.owner:hover {
+      border-color: var(--primary);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15);
+    }
+
+    .team-card.antigravity:hover {
+      border-color: var(--success);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
+    }
+
+    .team-card.hermes:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 10px 20px rgba(139, 92, 246, 0.15);
+    }
+
+    .team-card.qhomemart:hover {
+      border-color: var(--warning);
+      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.15);
+    }
+
+    .team-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .team-card:hover .team-avatar {
+      transform: scale(1.08);
+    }
+
+    .team-card.owner .team-avatar {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .team-card.antigravity .team-avatar {
+      background: linear-gradient(135deg, #0f172a, #10b981);
+      border-color: var(--success);
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .team-card.hermes .team-avatar {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-color: var(--secondary);
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .team-card.qhomemart .team-avatar {
+      background: linear-gradient(135deg, #ea580c, #f59e0b);
+      border-color: var(--warning);
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .team-name {
+      font-family: var(--font-outfit);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .team-role {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .team-card.owner .team-role { color: var(--primary); }
+    .team-card.antigravity .team-role { color: var(--success); }
+    .team-card.hermes .team-role { color: var(--secondary); }
+    .team-card.qhomemart .team-role { color: var(--warning); }
+
+    .team-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .team-card {
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .team-avatar {
+        margin-bottom: 0;
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Top Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-box">C</div>
+      <span class="brand-name">COMOT</span>
+    </div>
+    <div class="header-links">
+      <a href="/app" class="btn-dashboard" id="nav-dashboard">Buka Live Dashboard</a>
+    </div>
+  </header>
+
+  <!-- Presentation Main Area -->
+  <main class="presentation-container">
+    <div class="slide-wrapper">
+      
+      <!-- SLIDE 1: Hook & Identity -->
+      <section class="slide active" id="slide-1">
+        <div class="slide-tag">Hook & Identity</div>
+        <h2 class="slide-title">Memangkas 3% Kebocoran Profit Konstruksi Melalui Autonomous AI</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              Keterlambatan rantai pasok material di proyek konstruksi Yogyakarta memicu kerugian finansial yang signifikan. COMOT hadir menstandardisasi logistik konstruksi secara otonom.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">🛡️</span>
+                <div class="feature-text">
+                  <strong>Standardizing Logistics</strong>
+                  <p>Menghilangkan human-error pencatatan lapangan secara instan melalui bot Telegram.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">🎯</span>
+                <div class="feature-text">
+                  <strong>Yogyakarta Rumah_5M Pilot</strong>
+                  <p>Telah aktif diuji pada proyek residensial premium senilai Rp 5 Miliar di Sleman, Yogyakarta.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">🔥</span>
+                <div class="feature-text">
+                  <strong>3% Profit Leakage Prevention</strong>
+                  <p>Mencegah downtime kerja kritis akibat defisit material penting di lokasi proyek.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <div class="stat-row">
+              <div class="stat-card" style="border-color: var(--secondary)">
+                <span class="stat-num" style="color: var(--secondary)">Rp 5M</span>
+                <span class="stat-label">Nilai Proyek</span>
+                <span class="stat-desc">Yogyakarta Rumah_5M Sandbox</span>
+              </div>
+              <div class="stat-card" style="border-color: var(--danger)">
+                <span class="stat-num" style="color: var(--danger)">3%</span>
+                <span class="stat-label">Kebocoran Profit</span>
+                <span class="stat-desc">Dampak Defisit Supply Rantai Pasok</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: About Us -->
+      <section class="slide" id="slide-2">
+        <div class="slide-tag">Team & Vision</div>
+        <h2 class="slide-title">About Us</h2>
+        <div class="team-grid">
+          
+          <div class="team-card owner">
+            <img src="/indra.jpg" alt="Indra Haryadi" class="team-avatar">
+            <h3 class="team-name">Indra Haryadi</h3>
+            <span class="team-role">Chief AI Architect & Systems Engineer</span>
+            <p class="team-desc">Deployed and optimized the local AI VPS infrastructure (Ubuntu + Llama 3.2 3B). Architected the multi-agent orchestration via CrewAI to handle predictive material loss calculations with 100% stable, production-ready JSON pipelines.</p>
+          </div>
+
+          <div class="team-card antigravity">
+            <div class="team-avatar">🌌</div>
+            <h3 class="team-name">Antigravity</h3>
+            <span class="team-role">Frontend & Integration Lead</span>
+            <p class="team-desc">Developing the centralized COMOT 'Shell' application (FastAPI for CRUD telemetry). Spearheading the Telegram Bot architecture to establish a frictionless interface for field-worker reporting and backend data synchronization.</p>
+          </div>
+
+          <div class="team-card hermes">
+            <div class="team-avatar">⚡</div>
+            <h3 class="team-name">Hermes Agent</h3>
+            <span class="team-role">Strategic AI Operation & Marketing</span>
+            <p class="team-desc">The orchestrator behind this operation. Hermes validates logic, builds strategies, and optimizes deck marketing material to ensure COMOT services is running well and ready to served.</p>
+          </div>
+
+          <div class="team-card qhomemart">
+            <div class="team-avatar">🏪</div>
+            <h3 class="team-name">QHomeMart</h3>
+            <span class="team-role">Immediate Post-Presentation Target (Pending Approval)</span>
+            <p class="team-desc">Proposed collaboration to integrate COMOT’s automated JSON output with QHomeMart's Procurement API, enabling immediate supply deployment for the 10 Jogja Site sandboxes.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SLIDE 3: The Problem & Financial Cost -->
+      <section class="slide" id="slide-3">
+        <div class="slide-tag">The Problem</div>
+        <h2 class="slide-title">Rantai Pasok Lambat, Profit Bocor Rp 150 Juta per Hari</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              Pekerja lapangan enggan menggunakan aplikasi pencatatan logistik yang rumit, mengakibatkan data stok telat dilaporkan. Ketika semen instan atau besi habis, aktivitas cor terhenti seketika.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">🚫</span>
+                <div class="feature-text">
+                  <strong>Defisit Material Mendadak</strong>
+                  <p>Kehabisan Semen Instan menghentikan pengerjaan cor lantai secara berantai.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">💸</span>
+                <div class="feature-text">
+                  <strong>Overhead Damage Formula</strong>
+                  <p>Estimasi kerugian = (3% Nilai Proyek) / 100 per hari keterlambatan operasional.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <!-- Dynamic Overhead Loss Calculator Widget -->
+            <div class="slider-card">
+              <div class="slider-header">
+                <span class="slider-title">Atur Nilai Proyek Konstruksi</span>
+                <span class="slider-value-display" id="project-val-text">Rp 5.0 Milyar</span>
+              </div>
+              <input type="range" class="custom-range" id="project-slider" min="1" max="10" step="0.5" value="5">
+              
+              <div class="calculator-results">
+                <div class="result-box">
+                  <span class="result-label">Batas Kerugian (3%)</span>
+                  <span class="result-value warning" id="margin-loss-text">Rp 150.000.000</span>
+                </div>
+                <div class="result-box">
+                  <span class="result-label">Kerugian Delay / Hari</span>
+                  <span class="result-value danger" id="daily-loss-text">Rp 150.000.000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: The Solution -->
+      <section class="slide" id="slide-4">
+        <div class="slide-tag">The Solution</div>
+        <h2 class="slide-title">COMOT Shell & Interface: Menghubungkan Field dan AI</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              COMOT merancang jembatan integrasi sederhana. Pekerja melaporkan stok cukup lewat Telegram (tanpa aplikasi baru), sedangkan sistem AI di server bertindak sebagai pengambil keputusan otonom.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">💬</span>
+                <div class="feature-text">
+                  <strong>Telegram Interface (Emitters)</strong>
+                  <p>Input log cepat dengan shorthand otomatis (Contoh: "semen sisa 10").</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">💻</span>
+                <div class="feature-text">
+                  <strong>Centralized Shell Dashboard</strong>
+                  <p>Antarmuka visual real-time terpusat untuk memantau status inventory dan order.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <div class="feature-text">
+                  <strong>Autonomous Risk Alert</strong>
+                  <p>Memicu evaluasi secara otonom saat material mendekati ambang batas pengiriman.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <div class="stat-row">
+              <div class="stat-card" style="border-color: var(--primary)">
+                <span class="stat-num" style="color: var(--primary)">@mrcomot_bot</span>
+                <span class="stat-label">Telegram Bot</span>
+                <span class="stat-desc">Input Logistik 1 Detik</span>
+              </div>
+              <div class="stat-card" style="border-color: var(--success)">
+                <span class="stat-num" style="color: var(--success)">100%</span>
+                <span class="stat-label">Saling Sinkron</span>
+                <span class="stat-desc">Dashboard & Log Lapangan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: Technical Excellence -->
+      <section class="slide" id="slide-5">
+        <div class="slide-tag">Technical Excellence</div>
+        <h2 class="slide-title">4 Sub-Agent Collaboration Engine (Llama 3.2 3B)</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              COMOT ditenagai oleh Multi-Agent **CrewAI** yang mengoperasikan Llama 3.2 (3B) secara lokal di VPS Tencent Cloud. Menjamin privasi data konstruksi 100% dengan biaya token Rp 0.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">🧠</span>
+                <div class="feature-text">
+                  <strong>Local Llama 3.2 via Ollama</strong>
+                  <p>Proses pemikiran kognitif di-host mandiri, mandiri dari API eksternal yang kaku.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">📄</span>
+                <div class="feature-text">
+                  <strong>Clean Structured Output Guard</strong>
+                  <p>Hasil kalkulasi disajikan dalam format JSON murni tanpa basa-basi untuk integrasi API.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <!-- Interactive 4-Agent Flowchart -->
+            <div class="flow-widget">
+              <div class="agent-grid">
+                <div class="agent-box active" id="agent-1">
+                  <div class="agent-header">
+                    <span class="agent-dot"></span>
+                    <span class="agent-name">1. Project Coordinator</span>
+                  </div>
+                  <span class="agent-task">Menerima text log lap. & delegasikan tugas.</span>
+                </div>
+                <div class="agent-box" id="agent-2">
+                  <div class="agent-header">
+                    <span class="agent-dot"></span>
+                    <span class="agent-name">2. Material Forecaster</span>
+                  </div>
+                  <span class="agent-task">Hitung sisa stok & estimasi rugi delay Rp 150M.</span>
+                </div>
+                <div class="agent-box" id="agent-3">
+                  <div class="agent-header">
+                    <span class="agent-dot"></span>
+                    <span class="agent-name">3. Procurement Agent</span>
+                  </div>
+                  <span class="agent-task">Cek stok & jadwal kurir di B2B QHomeMart.</span>
+                </div>
+                <div class="agent-box" id="agent-4">
+                  <div class="agent-header">
+                    <span class="agent-dot"></span>
+                    <span class="agent-name">4. Structured Output Guard</span>
+                  </div>
+                  <span class="agent-task">Kompilasi rekomendasi ke JSON terstruktur.</span>
+                </div>
+              </div>
+              <div class="flow-actions">
+                <button class="btn-flow active" onclick="triggerFlowStep(1)">1. Input Log</button>
+                <button class="btn-flow" onclick="triggerFlowStep(2)">2. Cek Risiko</button>
+                <button class="btn-flow" onclick="triggerFlowStep(3)">3. Cari Supply</button>
+                <button class="btn-flow" onclick="triggerFlowStep(4)">4. Emit JSON</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: The QHomeMart Edge -->
+      <section class="slide" id="slide-6">
+        <div class="slide-tag">B2B Integration</div>
+        <h2 class="slide-title">QHomeMart Edge: Automatic PO & Customer Lock-in</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              COMOT mengunci funnel transaksi secara otomatis ke sistem penjualan QHomeMart. Memangkas proses administrasi manual dari hitungan hari menjadi detik.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <div class="feature-text">
+                  <strong>Automatic PO Draft</strong>
+                  <p>Mengubah rekomendasi AI menjadi draf Purchase Order digital siap bayar.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">🔒</span>
+                <div class="feature-text">
+                  <strong>Contractor Customer Lock-in</strong>
+                  <p>Kontraktor akan loyal bertransaksi di QHomeMart karena supply chain terotomatisasi.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">📊</span>
+                <div class="feature-text">
+                  <strong>Real-Time Yogyakarta Supply Insights</strong>
+                  <p>Memberikan data prediktif pola belanja material konstruksi di Jogja kepada QHomeMart.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <div class="stat-row">
+              <div class="stat-card" style="border-color: var(--success)">
+                <span class="stat-num" style="color: var(--success)">1-Click</span>
+                <span class="stat-label">Persetujuan B2B</span>
+                <span class="stat-desc">Sistem Human-in-the-Loop</span>
+              </div>
+              <div class="stat-card" style="border-color: var(--primary)">
+                <span class="stat-num" style="color: var(--primary)">0 Menit</span>
+                <span class="stat-label">Delay Rekapitulasi</span>
+                <span class="stat-desc">PO Langsung Masuk Antrean</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Mission & Quick Action Plan -->
+      <section class="slide" id="slide-7">
+        <div class="slide-tag">Roadmap</div>
+        <h2 class="slide-title">Jogja Rollout: Rencana Aksi Nyata 3 Bulan</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              Kami tidak hanya memaparkan ide teori, tetapi telah menyiapkan rencana taktis untuk mendominasi pasar sistem logistik konstruksi otonom di Yogyakarta.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">🚀</span>
+                <div class="feature-text">
+                  <strong>Jogja Sandbox Launch</strong>
+                  <p>Mulai menggandeng 10 kontraktor residensial Yogyakarta terpilih untuk uji coba skala penuh.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <!-- Roadmap Vertical Visual -->
+            <div class="roadmap-container">
+              <div class="roadmap-step active" id="step-1">
+                <div class="roadmap-number">B1</div>
+                <div class="roadmap-body">
+                  <span class="roadmap-step-title">Bulan 1: Finalizing COMOT MVP</span>
+                  <span class="roadmap-step-desc">Pengemasan bot Telegram & Dashboard CRUD ke status Production-Ready.</span>
+                </div>
+              </div>
+              <div class="roadmap-step" id="step-2">
+                <div class="roadmap-number">B2</div>
+                <div class="roadmap-body">
+                  <span class="roadmap-step-title">Bulan 2: Jogja Sandbox Pilot</span>
+                  <span class="roadmap-step-desc">Implementasi di lapangan bersama 10 kontraktor Yogyakarta terpilih.</span>
+                </div>
+              </div>
+              <div class="roadmap-step" id="step-3">
+                <div class="roadmap-number">B3</div>
+                <div class="roadmap-body">
+                  <span class="roadmap-step-title">Bulan 3: Deep API QHomeMart</span>
+                  <span class="roadmap-step-desc">Sinkronisasi output AI langsung ke gateway invoicing & logistik QHomeMart.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Progress Validation -->
+      <section class="slide" id="slide-8">
+        <div class="slide-tag">Validation</div>
+        <h2 class="slide-title">Sudah Aktif Bernapas di Tencent Cloud VPS 8GB RAM</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              COMOT adalah sistem yang nyata dan telah dideploy. Gunakan panel simulator di kanan untuk memicu aksi lapangan dan saksikan output AI & integrasi HTTPS B2B QHomeMart secara instan.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">💻</span>
+                <div class="feature-text">
+                  <strong>Tencent Cloud VPS Active</strong>
+                  <p>Backend terbungkus daemon proses node di server 43.133.139.131.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">🔌</span>
+                <div class="feature-text">
+                  <strong>B2B API Handshake Logs</strong>
+                  <p>Mencatat sequence SSL handshake dan parsing satuan logistik secara utuh.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <!-- Simulated Logs Console -->
+            <div class="simulator-card">
+              <div class="simulator-tabs">
+                <button class="sim-tab active" onclick="runSim('alert')">Defisit Semen</button>
+                <button class="sim-tab" onclick="runSim('buy')">Order B2B API</button>
+                <button class="sim-tab" onclick="runSim('track')">Lacak Pengiriman</button>
+              </div>
+              <div class="console-box" id="console-output">
+[READY] COMOT AI Engine is online on Tencent Cloud VPS (Port 8000)
+[READY] Ollama hermes3/llama3.2 model loaded in 8GB RAM
+[LOG] Awaiting input trigger...
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Team, Vision & CTA -->
+      <section class="slide" id="slide-9">
+        <div class="slide-tag">Team & Vision</div>
+        <h2 class="slide-title">Jadikan COMOT Standar Baru Logistik Konstruksi Otonom</h2>
+        <div class="slide-content">
+          <div class="slide-left">
+            <p class="slide-desc">
+              Kami membawa solusi yang sudah bernapas di server kami, bukan sekadar ide di atas kertas slide. Kami siap berkolaborasi untuk memodernisasi industri konstruksi Indonesia.
+            </p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">🤝</span>
+                <div class="feature-text">
+                  <strong>Undangan API Sandbox</strong>
+                  <p>Kami mengundang tim IT QHomeMart untuk membuka jalur API Sandbox minggu depan guna memulai integrasi fase 3.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slide-right">
+            <div class="stat-card" style="border-color: var(--secondary); text-align: center; gap: 0.75rem; width: 100%">
+              <span class="stat-label" style="font-size: 1.1rem; color: var(--secondary)">Mari Bangun 10 Proyek Pertama di Jogja</span>
+              <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                "Kami membawa sistem otonom yang siap mereduksi 3% kebocoran laba kontraktor konstruksi."
+              </p>
+              <a href="/app" class="btn-dashboard" style="margin-top: 0.5rem; display: inline-block;">Coba Real-Time Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slider controls -->
+      <div class="controls-panel">
+        <div class="slide-indicators" id="indicators-container">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="navigation-buttons">
+          <button class="btn-nav" id="btn-prev" onclick="changeSlide(-1)">Kembali</button>
+          <button class="btn-nav btn-primary-action" id="btn-next" onclick="changeSlide(1)">Lanjut</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>COMOT Construction Material Order & Tracking - Simpel.Fun AI Yogyakarta</p>
+  </footer>
+
+  <script>
+    const TOTAL_SLIDES = 9;
+    let currentSlide = 1;
+
+    // Initialize slide indicators
+    const indicatorsContainer = document.getElementById('indicators-container');
+    for (let i = 1; i <= TOTAL_SLIDES; i++) {
+      const ind = document.createElement('div');
+      ind.className = `indicator ${i === 1 ? 'active' : ''}`;
+      ind.onclick = () => jumpToSlide(i);
+      indicatorsContainer.appendChild(ind);
+    }
+
+    function updateControls() {
+      // Toggle nav buttons disabled state
+      document.getElementById('btn-prev').disabled = currentSlide === 1;
+      
+      const nextBtn = document.getElementById('btn-next');
+      if (currentSlide === TOTAL_SLIDES) {
+        nextBtn.innerHTML = 'Mulai Sandbox 🚀';
+        nextBtn.onclick = () => window.location.href = '/app';
+      } else {
+        nextBtn.innerHTML = 'Lanjut';
+        nextBtn.onclick = () => changeSlide(1);
+      }
+
+      // Update slide active state in DOM
+      for (let i = 1; i <= TOTAL_SLIDES; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        const indicator = indicatorsContainer.children[i-1];
+        if (i === currentSlide) {
+          slide.classList.add('active');
+          indicator.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+          indicator.classList.remove('active');
+        }
+      }
+    }
+
+    function changeSlide(direction) {
+      currentSlide += direction;
+      if (currentSlide < 1) currentSlide = 1;
+      if (currentSlide > TOTAL_SLIDES) currentSlide = TOTAL_SLIDES;
+      updateControls();
+    }
+
+    function jumpToSlide(slideNum) {
+      currentSlide = slideNum;
+      updateControls();
+    }
+
+    // SLIDE 2: Interactive Slider Calculator Logic
+    const slider = document.getElementById('project-slider');
+    const projectValText = document.getElementById('project-val-text');
+    const marginLossText = document.getElementById('margin-loss-text');
+    const dailyLossText = document.getElementById('daily-loss-text');
+
+    if (slider) {
+      slider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        projectValText.innerText = `Rp ${val.toFixed(1)} Milyar`;
+        
+        // Calculate 3% profit leakage boundary
+        const totalProfitLeakage = (val * 1000000000) * 0.03;
+        marginLossText.innerText = `Rp ${totalProfitLeakage.toLocaleString('id-ID')}`;
+        
+        // Overhead daily delay loss formula: (3% of Project Value) / 100 per day
+        const dailyLoss = totalProfitLeakage / 100;
+        dailyLossText.innerText = `Rp ${dailyLoss.toLocaleString('id-ID')}`;
+      });
+    }
+
+    // SLIDE 4: Interactive Flowchart Active Agent Steps
+    let currentFlowStep = 1;
+    function triggerFlowStep(step) {
+      currentFlowStep = step;
+      // Remove active states from flow actions and agent boxes
+      document.querySelectorAll('.btn-flow').forEach((btn, idx) => {
+        if (idx + 1 === step) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      for (let i = 1; i <= 4; i++) {
+        const box = document.getElementById(`agent-${i}`);
+        if (i === step) box.classList.add('active');
+        else box.classList.remove('active');
+      }
+    }
+
+    // SLIDE 6: Roadmap active steps sync
+    // Simple cycle timer to show roadmap progress step animation
+    setInterval(() => {
+      const activeStep = document.querySelector('.roadmap-step.active');
+      if (activeStep) {
+        let nextId = 1;
+        const currentId = parseInt(activeStep.id.split('-')[1]);
+        if (currentId < 3) nextId = currentId + 1;
+        
+        document.querySelectorAll('.roadmap-step').forEach(step => {
+          if (step.id === `step-${nextId}`) step.classList.add('active');
+          else step.classList.remove('active');
+        });
+      }
+    }, 4000);
+
+    // SLIDE 7: Console Simulator Scenarios
+    const consoleOutput = document.getElementById('console-output');
+    
+    const scenarios = {
+      alert: `[INFO] Polling field updates from Telegram bot...
+[LOG] Telegram user @lapangancor: "/log Rumah_5M semen 10 keluar"
+[AI ENGINE] Project Coordinator Agent triggered context.
+[AI ENGINE] Coordinator delegated task to Material Forecaster.
+[AI ENGINE] Material Forecaster is running depletion calculations...
+[AI WARNING] Semen_Instan stock drops to 10 sak (Threshold: 20 sak).
+[AI WARNING] Remaining Lifetime: 1.0 Days. Supplier lead-time: 1.0 Days.
+[AI WARNING] 🚨 CRITICAL BLOCKING RISK! Cor Floor 2 will be delayed!
+[AI CALC] Potential daily overhead penalty: Rp 150.000.000.
+[JSON EMITTED] 
+{
+  "status_urgensi": "HIGH",
+  "material": "Semen_Instan",
+  "sisa_stok_sak": 10,
+  "estimasi_kerugian_delay": 150000000,
+  "rekomendasi": "Segera lakukan order darurat Semen Instan ke QHomeMart Sleman"
+}`,
+      buy: `[INFO] Procurement Agent triggered 1-Click B2B purchase API.
+[B2B HANDSHAKE] Connecting to: https://api.qhomemart.com/procurement/order
+[B2B HANDSHAKE] SSL Verification... SUCCESS (TLSv1.3 handshake verified)
+[B2B API] Sending secure JSON payload...
+[B2B API] Pre-authorizing Purchase Order QHM-20260530-9831
+[SUCCESS] B2B PO pre-fill approved! Total Bayar: Rp 3.250.000.
+[TELEGRAM BOT] Sent order broadcast to contractor group.
+[SIMULATOR] Courier "Supriyadi" assigned to invoice CGN-QHM-38192.`,
+      track: `[INFO] Fetching logistics real-time trackers...
+[API GET] Querying active courier statuses...
+[TRACKING LOG] Resi: CGN-QHM-38192 | Courier: Supriyadi
+[TRACKING LOG] Status: DIKIRIM (In Transit) - Yogyakarta Ring Road North
+[AI ANALYST] Order ETA is 1.0 hours.
+[AI ANALYST] Lead-time window is safe. No active blocking potential in site.
+[LOG] All logistics tracks verified. Dashboard metrics synchronized.`
+    };
+
+    function runSim(type) {
+      // Toggle tabs
+      document.querySelectorAll('.sim-tab').forEach(tab => {
+        if (tab.innerText.toLowerCase().includes(type === 'alert' ? 'defisit' : type === 'buy' ? 'order' : 'lacak')) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      consoleOutput.innerHTML = '<span class="console-line">[SIMULATOR] Processing event trigger...</span>';
+      
+      let lines = scenarios[type].split('\n');
+      let index = 0;
+      
+      const interval = setInterval(() => {
+        if (index < lines.length) {
+          const line = lines[index];
+          let formattedLine = line;
+          
+          if (line.includes('[READY]') || line.includes('[SUCCESS]')) {
+            formattedLine = `<span class="console-success">${line}</span>`;
+          } else if (line.includes('[AI WARNING]') || line.includes('🚨')) {
+            formattedLine = `<span class="console-warning">${line}</span>`;
+          } else if (line.includes('[LOG]') || line.includes('[B2B HANDSHAKE]')) {
+            formattedLine = `<span class="console-input">${line}</span>`;
+          }
+          
+          consoleOutput.innerHTML += `<div class="console-line">${formattedLine}</div>`;
+          consoleOutput.scrollTop = consoleOutput.scrollHeight;
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 150);
+    }
+
+    // Run first simulator automatically
+    setTimeout(() => {
+      runSim('alert');
+    }, 1000);
+  </script>
+</body>
+</html>

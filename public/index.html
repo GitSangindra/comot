@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMOT - Real-Time Logistics & Multi-Agent AI Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar / Brand -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-icon">📦</span>
+        <div class="brand-text">
+          <h1>COMOT</h1>
+          <p>Logistics & Procurement AI</p>
+        </div>
+      </div>
+      
+      <div class="system-status">
+        <a href="/" class="status-pill back-btn">
+          🏠 Kembali ke Halaman Depan
+        </a>
+        <div class="status-pill online">
+          <span class="dot"></span> Server: ONLINE
+        </div>
+        <div class="status-pill bot-status" id="tg-status-pill">
+          <span class="dot"></span> Telegram: READY
+        </div>
+      </div>
+      
+      <div class="meta-info">
+        <span class="label">Host IP:</span>
+        <span class="val" id="host-ip">43.133.139.131</span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-grid">
+      
+      <!-- Stats Summary -->
+      <section class="stats-container card-panel">
+        <h2 class="panel-title">📦 Ringkasan Logistik Proyek</h2>
+        <div class="stats-grid">
+          
+          <div class="stat-card glass-morph">
+            <div class="stat-icon cement">🧱</div>
+            <div class="stat-info">
+              <h3>Stok Semen Instan</h3>
+              <p class="stat-number" id="cement-qty">0 sak</p>
+              <div class="progress-bar">
+                <div class="progress-fill alert" id="cement-progress" style="width: 0%"></div>
+              </div>
+              <span class="stat-alert-text text-danger" id="cement-alert">🚨 STOK KRITIS (&lt; 20 sak)</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass-morph">
+            <div class="stat-icon steel">⛓️</div>
+            <div class="stat-info">
+              <h3>Stok Besi 12mm</h3>
+              <p class="stat-number" id="steel-qty">0 pcs</p>
+              <div class="progress-bar">
+                <div class="progress-fill success" id="steel-progress" style="width: 0%"></div>
+              </div>
+              <span class="stat-alert-text text-success" id="steel-alert">✅ Stok Cukup</span>
+            </div>
+          </div>
+
+          <div class="stat-card glass-morph">
+            <div class="stat-icon budget">💰</div>
+            <div class="stat-info">
+              <h3>Nilai Proyek Rumah</h3>
+              <p class="stat-number">Rp 5.000.000.000</p>
+              <span class="stat-subtext">Lokasi: Site Sleman</span>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- COMOT Procurement Expert Advisor -->
+      <section class="expert-advisor-container card-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">💡 COMOT Procurement Expert</h2>
+          <div class="expert-status">
+            <span class="pulse-indicator idle" id="expert-ai-indicator"></span> 
+            <span class="expert-status-text" id="expert-ai-status">AI Idle</span>
+          </div>
+        </div>
+        <div class="expert-body glass-morph" id="expert-advisor-content" style="padding: 16px 20px; font-size: 0.95rem; border-left: 4px solid var(--success);">
+          Memuat analisis ahli...
+        </div>
+      </section>
+
+      <!-- Active Order Tracker -->
+      <section class="order-tracker-container card-panel">
+        <h2 class="panel-title">🚚 Pelacakan Pengiriman & Analisis Delay</h2>
+        
+        <!-- Project Blocking Alert Banner -->
+        <div class="blocking-alert-box glass-morph" id="blocking-alert-banner" style="display: none;">
+          <!-- Will be dynamically populated -->
+        </div>
+
+        <div class="table-responsive glass-morph">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>ID Pesanan</th>
+                <th>Material</th>
+                <th>Jumlah</th>
+                <th>Biaya</th>
+                <th>Resi / Kurir</th>
+                <th>ETA</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tracker-tbody">
+              <tr>
+                <td colspan="7" class="text-center text-muted">Memuat data pengiriman...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Logs Tracking -->
+      <section class="logs-container card-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">⏱️ Real-Time Log Lapangan</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh">🔄 Refresh</button>
+        </div>
+        <div class="table-responsive glass-morph">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Proyek</th>
+                <th>Material</th>
+                <th>Jumlah</th>
+                <th>Status</th>
+                <th>Sumber Input</th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <!-- Dynamically populated -->
+              <tr>
+                <td colspan="6" class="text-center text-muted">Memuat data logistik...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Multi-Agent AI System -->
+      <section class="ai-container card-panel">
+        <h2 class="panel-title">🧠 Sistem Multi-Agent Llama 3.2 (3B)</h2>
+        <div class="ai-grid">
+          
+          <div class="ai-controls glass-morph">
+            <p class="desc">Jalankan evaluasi logistik konstruksi secara otonom. CrewAI akan mengerahkan <strong>Manajer Logistik</strong> &amp; <strong>Validator JSON</strong> untuk menganalisis risiko, menghitung overhead, dan merumuskan purchasing order di Qhomemart.</p>
+            <button class="btn btn-primary btn-block btn-lg" id="btn-trigger-ai">⚡ Jalankan CrewAI Multi-Agent</button>
+            <button class="btn btn-success btn-block btn-lg mt-3" id="btn-approve-order" style="display: none; background: linear-gradient(135deg, hsl(145, 80%, 45%) 0%, hsl(145, 80%, 30%) 100%); box-shadow: 0 4px 15px rgba(20, 180, 90, 0.4); border: none; color: white;">🛒 Setujui &amp; Pesan di Qhomemart</button>
+            
+            <div class="agent-profiles mt-4">
+              <div class="agent-avatar active">
+                <span class="avatar">👨‍💼</span>
+                <div>
+                  <h4>Project Coordinator</h4>
+                  <p>Risk &amp; Overhead Analyst</p>
+                </div>
+              </div>
+              <div class="agent-avatar active">
+                <span class="avatar">🤖</span>
+                <div>
+                  <h4>Guard Agent</h4>
+                  <p>JSON Structured Parser</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-terminal glass-morph">
+            <div class="terminal-header">
+              <span class="term-dot danger"></span>
+              <span class="term-dot warning"></span>
+              <span class="term-dot success"></span>
+              <span class="term-title">llama3.2@comot-vps:~</span>
+            </div>
+            <pre class="terminal-body" id="terminal-output">Ready to execute. Click the trigger button above to initiate Llama 3.2 (3B) CrewAI workflow...</pre>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- Buy Material Panel -->
+      <section class="buy-material-container card-panel">
+        <h2 class="panel-title">🛒 Pesan Material QHomemart</h2>
+        <div class="buy-form glass-morph p-3" style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <p class="desc text-muted" style="font-size: 0.85rem; margin-bottom: 4px;">Pesan material langsung ke toko QHomemart Cabang Sleman ketika ambang stok kritis.</p>
+          
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="buy-material-select" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Pilih Material:</label>
+            <select id="buy-material-select" class="form-select" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; color: var(--text-main); font-size: 0.9rem; outline: none;">
+              <option value="Semen_Instan" selected>🧱 Semen Instan (Rp 65.000 / sak)</option>
+              <option value="Besi_12mm">⛓️ Besi 12mm (Rp 95.000 / pcs)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="buy-qty-input" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Jumlah Pesanan (sak/pcs):</label>
+            <input type="number" id="buy-qty-input" value="50" min="1" class="form-input" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; color: var(--text-main); font-size: 0.9rem; outline: none;" />
+          </div>
+
+          <div class="price-preview glass-morph" style="padding: 12px; border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2);">
+            <div class="price-row" style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+              <span class="text-muted">Harga Satuan:</span>
+              <span id="buy-unit-price" style="font-weight: 600;">Rp 65.000</span>
+            </div>
+            <div class="price-row total" style="display: flex; justify-content: space-between; font-size: 0.95rem; border-top: 1px dashed var(--border-color); padding-top: 6px; margin-top: 4px;">
+              <span class="text-muted" style="font-weight: 600;">Total Proyeksi:</span>
+              <span id="buy-total-price" style="font-weight: 700; color: var(--warning);">Rp 3.250.000</span>
+            </div>
+            <div class="price-row eta" style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--secondary);">
+              <span>Lead Time Pengiriman:</span>
+              <span id="buy-lead-time" style="font-weight: 600;">1 Hari (Sleman Warehouse)</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="btn-buy-material" style="padding: 10px; font-size: 0.95rem;">🛒 Beli via B2B API</button>
+        </div>
+      </section>
+
+      <!-- Telegram Bot Simulator -->
+      <section class="telegram-container card-panel">
+        <h2 class="panel-title">💬 Live Simulator Telegram Bot</h2>
+        <div class="telegram-card glass-morph">
+          <p class="desc mb-3">Simulasikan tim lapangan memasukkan logistik langsung dari lapangan. Bot Anda sedang aktif di VPS!</p>
+          
+          <div class="telegram-phone">
+            <div class="phone-screen">
+              <div class="phone-header">
+                <span class="avatar">🤖</span>
+                <div>
+                  <h4>COMOT Logistics Bot</h4>
+                  <p class="online-status">online</p>
+                </div>
+              </div>
+              <div class="phone-chat" id="chat-messages">
+                <div class="msg bot-msg">
+                  👋 <strong>Selamat datang di COMOT Logistics Agent Bot!</strong><br><br>
+                  Saya adalah asisten logistik proyek Anda. Tim lapangan dapat memasukkan data material secara instan dari lokasi.<br><br>
+                  <strong>Perintah yang tersedia:</strong><br>
+                  📝 <code>/log [proyek] [material] [jumlah] [status]</code><br>
+                  📊 <code>/status</code> - Cek stok material<br>
+                  🧠 <code>/reason</code> - Jalankan CrewAI
+                </div>
+              </div>
+              <div class="phone-input-bar">
+                <input type="text" id="chat-input" placeholder="Tulis pesan... Contoh: /log Rumah_5M Semen_Instan 25 Masuk" />
+                <button id="chat-send">▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer text-center">
+      <p>COMOT System © 2026 - Lolos Lomba AI &amp; Konstruksi Qhomemart Yogyakarta</p>
+    </footer>
+  </div>
+
+  <!-- Receipt Modal -->
+  <div class="modal-overlay" id="order-modal" style="display: none;">
+    <div class="receipt-card glass-morph">
+      <div class="receipt-header">
+        <span class="receipt-icon">🛒</span>
+        <h2>Transaksi Qhomemart Sukses!</h2>
+        <p class="invoice-id" id="receipt-invoice-id">QHM-XXXXX</p>
+      </div>
+      <div class="receipt-body">
+        <div class="receipt-row">
+          <span class="r-label">Proyek:</span>
+          <span class="r-val" id="receipt-project">-</span>
+        </div>
+        <div class="receipt-row">
+          <span class="r-label">Vendor:</span>
+          <span class="r-val">Qhomemart Sleman</span>
+        </div>
+        <div class="receipt-row">
+          <span class="r-label">Item Material:</span>
+          <span class="r-val" id="receipt-material">-</span>
+        </div>
+        <div class="receipt-row">
+          <span class="r-label">Jumlah:</span>
+          <span class="r-val" id="receipt-quantity">0 sak</span>
+        </div>
+        <div class="receipt-row total">
+          <span class="r-label">Total Pembayaran:</span>
+          <span class="r-val" id="receipt-total">-</span>
+        </div>
+        <div class="receipt-row status">
+          <span class="r-label">Status Pengiriman:</span>
+          <span class="r-val text-success" id="receipt-status">-</span>
+        </div>
+        <div class="receipt-row eta">
+          <span class="r-label">Estimasi Tiba:</span>
+          <span class="r-val text-bright" id="receipt-eta">-</span>
+        </div>
+      </div>
+      <div class="receipt-footer">
+        <p>🔔 Notifikasi logistik telah dikirimkan otomatis ke bot Telegram tim lapangan.</p>
+        <button class="btn btn-primary" id="btn-close-modal" style="margin-top: 12px; width: 100%;">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

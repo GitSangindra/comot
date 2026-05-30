@@ -1,0 +1,587 @@
+ajari aku cara pakai hermes yang uda jalan di vps sumopod, untuk mengerjakan COMOT ini
+
+Untuk memanfaatkan Hermes yang sudah berjalan di VPS Sumopod untuk membangun MVP COMOT, kita bisa menggunakannya sebagai asisten coding otomatis (AI Developer) langsung di server. Hermes sangat bertenaga untuk code generation, membuat struktur repositori, hingga debugging berbasis instruksi teks (prompt).
+
+Berikut adalah panduan langkah demi langkah cara mengoperasikan dan memanfaatkannya untuk mengeksekusi proyek COMOT.
+
+1. Memastikan Akses ke Hermes di VPS
+
+Biasanya, Hermes di VPS dijalankan menggunakan salah satu dari dua cara: via CLI (Terminal) atau via Web UI (seperti Open WebUI atau Ollama API).
+
+Opsi A: Jika Hermes Berjalan via Web UI / Port API
+
+Jika VPS-mu sudah membuka port untuk akses web (misal port 3000 atau 11434 untuk Ollama):
+
+Buka browser dan masuk ke alamat IP VPS kamu (contoh: http://IP_VPS_KAMU:3000).
+
+Pilih model Hermes (misalnya Hermes-3-Llama-3.1 atau versi yang kamu instal).
+
+Opsi B: Jika Akses Lewat SSH Terminal (CLI)
+
+Jika kamu masuk ke VPS via SSH, kamu bisa langsung memanggil Hermes menggunakan runner seperti Ollama:
+
+Bash
+ssh user@ip_vps_sumopod
+ollama run hermes3 # (atau sesuaikan dengan nama model yang kamu install)
+
+
+Setelah masuk ke prompt >>>, kamu bisa langsung mengobrol dengan Hermes.
+
+2. Strategi Eksekusi Proyek COMOT Menggunakan Hermes
+
+Jangan langsung menyuruh Hermes membuat "seluruh aplikasi COMOT" sekaligus karena hasilnya akan terpotong. Kita akan menyuapinya menggunakan PRD.md yang sudah kita buat sebelumnya secara bertahap.
+
+Langkah 1: Inisialisasi Struktur Proyek
+
+Minta Hermes membuatkan struktur folder dasar untuk MVP COMOT (kita asumsikan menggunakan stack modern dan cepat seperti Node.js/Express untuk Backend dan React/Next.js untuk Frontend, atau Python jika kamu fokus ke AI).
+
+Prompt ke Hermes:
+
+"Saya ingin membuat MVP untuk COMOT berdasarkan PRD yang ada. Tolong buatkan struktur folder boilerplate untuk aplikasi web berbasis Node.js (Express) untuk backend dan React untuk frontend. Berikan juga file package.json dasarnya."
+
+Langkah 2: Membuat Integrasi API Qhomemart (Mocking)
+
+Karena MVP ini membutuhkan integrasi API Purchasing Qhomemart, minta Hermes membuatkan skrip integrasi atau mock API-nya terlebih dahulu.
+
+Prompt ke Hermes:
+
+"Buatlah sebuah modul backend Express di file controllers/qhomemartController.js untuk menghubungkan API purchasing Qhomemart. Karena ini MVP, buatkan mock data yang mensimulasikan status order material seperti 'Pending', 'In Transit', dan 'Delivered'."
+
+Langkah 3: Membuat Fitur Pencatatan Lapangan (Database & Route)
+
+Pekerja lapangan butuh antarmuka sederhana untuk mencatat material yang masuk/keluar. Minta Hermes membuatkan skema database (misal menggunakan PostgreSQL atau MongoDB) dan route-nya.
+
+Prompt ke Hermes:
+
+"Buat skema database Mongoose (MongoDB) untuk MaterialLog yang mencatat nama proyek, nama material, kuantitas, status (masuk/keluar), dan timestamp. Berikan juga API route POST /api/logs untuk mencatat data dari lapangan."
+
+3. Alur Kerja Otomatis: Menghubungkan Hermes ke File Sistem VPS
+
+Jika kamu ingin Hermes bekerja lebih efisien langsung membaca dan menulis file di VPS, kamu bisa memanfaatkan Aider atau Continue.dev yang dihubungkan ke model Hermes di VPS-mu.
+
+Namun, jika kamu menggunakan Hermes secara manual lewat terminal/web:
+
+Salin Code dari Hermes: Biarkan Hermes men-generate kode di layar.
+
+Gunakan nano atau vim: Di terminal VPS, buat filenya.
+
+Bash
+nano backend/controllers/qhomemartController.js
+
+
+Paste dan Save: Tempel kode dari Hermes, lalu simpan (Ctrl+O, lalu Ctrl+X di nano).
+
+4. Perintah Penting untuk Menjaga Hermes Tetap Stabil di VPS
+
+Karena Hermes berjalan di VPS Sumopod milikmu, pastikan resource-nya terjaga dengan perintah-perintah Linux ini:
+
+Mengecek status service AI (jika pakai Ollama):
+
+Bash
+sudo systemctl status ollama
+
+
+Melihat penggunaan RAM/CPU VPS saat Hermes berpikir:
+
+Bash
+htop
+
+
+(Memastikan VPS tidak crash/freeze saat Hermes memproses teks yang panjang).
+
+Mau mulai dari bagian mana dulu? Kita bisa buatkan prompt pertama yang sangat spesifik untuk kamu copy-paste langsung ke Hermes di VPS-mu sekarang.
+----------------------------------------
+[450] <SPAN class="user-query-container">:
+You said
+
+ajari aku cara pakai hermes yang uda jalan di vps sumopod, untuk mengerjakan COMOT ini
+----------------------------------------
+[451] <P class="query-text-line ng-star-inserted">:
+ajari aku cara pakai hermes yang uda jalan di vps sumopod, untuk mengerjakan COMOT ini
+----------------------------------------
+[452] <DIV class="response-container response-container-with-gpi ng-tns-c3118632421-133">:
+Untuk memanfaatkan Hermes yang sudah berjalan di VPS Sumopod untuk membangun MVP COMOT, kita bisa menggunakannya sebagai asisten coding otomatis (AI Developer) langsung di server. Hermes sangat bertenaga untuk code generation, membuat struktur repositori, hingga debugging berbasis instruksi teks (prompt).
+
+Berikut adalah panduan langkah demi langkah cara mengoperasikan dan memanfaatkannya untuk mengeksekusi proyek COMOT.
+
+1. Memastikan Akses ke Hermes di VPS
+
+Biasanya, Hermes di VPS dijalankan menggunakan salah satu dari dua cara: via CLI (Terminal) atau via Web UI (seperti Open WebUI atau Ollama API).
+
+Opsi A: Jika Hermes Berjalan via Web UI / Port API
+
+Jika VPS-mu sudah membuka port untuk akses web (misal port 3000 atau 11434 untuk Ollama):
+
+Buka browser dan masuk ke alamat IP VPS kamu (contoh: http://IP_VPS_KAMU:3000).
+
+Pilih model Hermes (misalnya Hermes-3-Llama-3.1 atau versi yang kamu instal).
+
+Opsi B: Jika Akses Lewat SSH Terminal (CLI)
+
+Jika kamu masuk ke VPS via SSH, kamu bisa langsung memanggil Hermes menggunakan runner seperti Ollama:
+
+Bash
+ssh user@ip_vps_sumopod
+ollama run hermes3 # (atau sesuaikan dengan nama model yang kamu install)
+
+
+Setelah masuk ke prompt >>>, kamu bisa langsung mengobrol dengan Hermes.
+
+2. Strategi Eksekusi Proyek COMOT Menggunakan Hermes
+
+Jangan langsung menyuruh Hermes membuat "seluruh aplikasi COMOT" sekaligus karena hasilnya akan terpotong. Kita akan menyuapinya menggunakan PRD.md yang sudah kita buat sebelumnya secara bertahap.
+
+Langkah 1: Inisialisasi Struktur Proyek
+
+Minta Hermes membuatkan struktur folder dasar untuk MVP COMOT (kita asumsikan menggunakan stack modern dan cepat seperti Node.js/Express untuk Backend dan React/Next.js untuk Frontend, atau Python jika kamu fokus ke AI).
+
+Prompt ke Hermes:
+
+"Saya ingin membuat MVP untuk COMOT berdasarkan PRD yang ada. Tolong buatkan struktur folder boilerplate untuk aplikasi web berbasis Node.js (Express) untuk backend dan React untuk frontend. Berikan juga file package.json dasarnya."
+
+Langkah 2: Membuat Integrasi API Qhomemart (Mocking)
+
+Karena MVP ini membutuhkan integrasi API Purchasing Qhomemart, minta Hermes membuatkan skrip integrasi atau mock API-nya terlebih dahulu.
+
+Prompt ke Hermes:
+
+"Buatlah sebuah modul backend Express di file controllers/qhomemartController.js untuk menghubungkan API purchasing Qhomemart. Karena ini MVP, buatkan mock data yang mensimulasikan status order material seperti 'Pending', 'In Transit', dan 'Delivered'."
+
+Langkah 3: Membuat Fitur Pencatatan Lapangan (Database & Route)
+
+Pekerja lapangan butuh antarmuka sederhana untuk mencatat material yang masuk/keluar. Minta Hermes membuatkan skema database (misal menggunakan PostgreSQL atau MongoDB) dan route-nya.
+
+Prompt ke Hermes:
+
+"Buat skema database Mongoose (MongoDB) untuk MaterialLog yang mencatat nama proyek, nama material, kuantitas, status (masuk/keluar), dan timestamp. Berikan juga API route POST /api/logs untuk mencatat data dari lapangan."
+
+3. Alur Kerja Otomatis: Menghubungkan Hermes ke File Sistem VPS
+
+Jika kamu ingin Hermes bekerja lebih efisien langsung membaca dan menulis file di VPS, kamu bisa memanfaatkan Aider atau Continue.dev yang dihubungkan ke model Hermes di VPS-mu.
+
+Namun, jika kamu menggunakan Hermes secara manual lewat terminal/web:
+
+Salin Code dari Hermes: Biarkan Hermes men-generate kode di layar.
+
+Gunakan nano atau vim: Di terminal VPS, buat filenya.
+
+Bash
+nano backend/controllers/qhomemartController.js
+
+
+Paste dan Save: Tempel kode dari Hermes, lalu simpan (Ctrl+O, lalu Ctrl+X di nano).
+
+4. Perintah Penting untuk Menjaga Hermes Tetap Stabil di VPS
+
+Karena Hermes berjalan di VPS Sumopod milikmu, pastikan resource-nya terjaga dengan perintah-perintah Linux ini:
+
+Mengecek status service AI (jika pakai Ollama):
+
+Bash
+sudo systemctl status ollama
+
+
+Melihat penggunaan RAM/CPU VPS saat Hermes berpikir:
+
+Bash
+htop
+
+
+(Memastikan VPS tidak crash/freeze saat Hermes memproses teks yang panjang).
+
+Mau mulai dari bagian mana dulu? Kita bisa buatkan prompt pertama yang sangat spesifik untuk kamu copy-paste langsung ke Hermes di VPS-mu sekarang.
+----------------------------------------
+[453] <P class="">:
+Untuk memanfaatkan Hermes yang sudah berjalan di VPS Sumopod untuk membangun MVP COMOT, kita bisa menggunakannya sebagai asisten coding otomatis (AI Developer) langsung di server. Hermes sangat bertenaga untuk code generation, membuat struktur repositori, hingga debugging berbasis instruksi teks (prompt).
+----------------------------------------
+[454] <P class="">:
+Berikut adalah panduan langkah demi langkah cara mengoperasikan dan memanfaatkannya untuk mengeksekusi proyek COMOT.
+----------------------------------------
+[455] <H2 class="">:
+1. Memastikan Akses ke Hermes di VPS
+----------------------------------------
+[456] <P class="">:
+Biasanya, Hermes di VPS dijalankan menggunakan salah satu dari dua cara: via CLI (Terminal) atau via Web UI (seperti Open WebUI atau Ollama API).
+----------------------------------------
+[457] <H3 class="">:
+Opsi A: Jika Hermes Berjalan via Web UI / Port API
+----------------------------------------
+[458] <P class="">:
+Jika VPS-mu sudah membuka port untuk akses web (misal port 3000 atau 11434 untuk Ollama):
+----------------------------------------
+[459] <P class="">:
+Buka browser dan masuk ke alamat IP VPS kamu (contoh: http://IP_VPS_KAMU:3000).
+----------------------------------------
+[460] <P class="">:
+Pilih model Hermes (misalnya Hermes-3-Llama-3.1 atau versi yang kamu instal).
+----------------------------------------
+[461] <H3 class="">:
+Opsi B: Jika Akses Lewat SSH Terminal (CLI)
+----------------------------------------
+[462] <P class="">:
+Jika kamu masuk ke VPS via SSH, kamu bisa langsung memanggil Hermes menggunakan runner seperti Ollama:
+----------------------------------------
+[463] <DIV class="code-block ng-tns-c1345347775-610 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+Bash
+ssh user@ip_vps_sumopod
+ollama run hermes3 # (atau sesuaikan dengan nama model yang kamu install)
+----------------------------------------
+[464] <DIV class="formatted-code-block-internal-container ng-tns-c1345347775-610">:
+ssh user@ip_vps_sumopod
+ollama run hermes3 # (atau sesuaikan dengan nama model yang kamu install)
+----------------------------------------
+[465] <SPAN class="hljs-comment">:
+# (atau sesuaikan dengan nama model yang kamu install)
+----------------------------------------
+[466] <P class="">:
+Setelah masuk ke prompt >>>, kamu bisa langsung mengobrol dengan Hermes.
+----------------------------------------
+[467] <H2 class="">:
+2. Strategi Eksekusi Proyek COMOT Menggunakan Hermes
+----------------------------------------
+[468] <P class="">:
+Jangan langsung menyuruh Hermes membuat "seluruh aplikasi COMOT" sekaligus karena hasilnya akan terpotong. Kita akan menyuapinya menggunakan PRD.md yang sudah kita buat sebelumnya secara bertahap.
+----------------------------------------
+[469] <H3 class="">:
+Langkah 1: Inisialisasi Struktur Proyek
+----------------------------------------
+[470] <P class="">:
+Minta Hermes membuatkan struktur folder dasar untuk MVP COMOT (kita asumsikan menggunakan stack modern dan cepat seperti Node.js/Express untuk Backend dan React/Next.js untuk Frontend, atau Python jika kamu fokus ke AI).
+----------------------------------------
+[471] <P class="">:
+Prompt ke Hermes:
+----------------------------------------
+[472] <P class="">:
+"Saya ingin membuat MVP untuk COMOT berdasarkan PRD yang ada. Tolong buatkan struktur folder boilerplate untuk aplikasi web berbasis Node.js (Express) untuk backend dan React untuk frontend. Berikan juga file package.json dasarnya."
+----------------------------------------
+[473] <H3 class="">:
+Langkah 2: Membuat Integrasi API Qhomemart (Mocking)
+----------------------------------------
+[474] <P class="">:
+Karena MVP ini membutuhkan integrasi API Purchasing Qhomemart, minta Hermes membuatkan skrip integrasi atau mock API-nya terlebih dahulu.
+----------------------------------------
+[475] <P class="">:
+"Buatlah sebuah modul backend Express di file controllers/qhomemartController.js untuk menghubungkan API purchasing Qhomemart. Karena ini MVP, buatkan mock data yang mensimulasikan status order material seperti 'Pending', 'In Transit', dan 'Delivered'."
+----------------------------------------
+[476] <H3 class="">:
+Langkah 3: Membuat Fitur Pencatatan Lapangan (Database & Route)
+----------------------------------------
+[477] <P class="">:
+Pekerja lapangan butuh antarmuka sederhana untuk mencatat material yang masuk/keluar. Minta Hermes membuatkan skema database (misal menggunakan PostgreSQL atau MongoDB) dan route-nya.
+----------------------------------------
+[478] <P class="">:
+"Buat skema database Mongoose (MongoDB) untuk MaterialLog yang mencatat nama proyek, nama material, kuantitas, status (masuk/keluar), dan timestamp. Berikan juga API route POST /api/logs untuk mencatat data dari lapangan."
+----------------------------------------
+[479] <H2 class="">:
+3. Alur Kerja Otomatis: Menghubungkan Hermes ke File Sistem VPS
+----------------------------------------
+[480] <P class="">:
+Jika kamu ingin Hermes bekerja lebih efisien langsung membaca dan menulis file di VPS, kamu bisa memanfaatkan Aider atau Continue.dev yang dihubungkan ke model Hermes di VPS-mu.
+----------------------------------------
+[481] <P class="">:
+Namun, jika kamu menggunakan Hermes secara manual lewat terminal/web:
+----------------------------------------
+[482] <P class="">:
+Salin Code dari Hermes: Biarkan Hermes men-generate kode di layar.
+----------------------------------------
+[483] <P class="">:
+Gunakan nano atau vim: Di terminal VPS, buat filenya.
+----------------------------------------
+[484] <DIV class="code-block ng-tns-c1345347775-611 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+Bash
+nano backend/controllers/qhomemartController.js
+----------------------------------------
+[485] <DIV class="formatted-code-block-internal-container ng-tns-c1345347775-611">:
+nano backend/controllers/qhomemartController.js
+----------------------------------------
+[486] <P class="">:
+Paste dan Save: Tempel kode dari Hermes, lalu simpan (Ctrl+O, lalu Ctrl+X di nano).
+----------------------------------------
+[487] <H2 class="">:
+4. Perintah Penting untuk Menjaga Hermes Tetap Stabil di VPS
+----------------------------------------
+[488] <P class="">:
+Karena Hermes berjalan di VPS Sumopod milikmu, pastikan resource-nya terjaga dengan perintah-perintah Linux ini:
+----------------------------------------
+[489] <P class="">:
+Mengecek status service AI (jika pakai Ollama):
+----------------------------------------
+[490] <DIV class="code-block ng-tns-c1345347775-612 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+Bash
+sudo systemctl status ollama
+----------------------------------------
+[491] <DIV class="formatted-code-block-internal-container ng-tns-c1345347775-612">:
+sudo systemctl status ollama
+----------------------------------------
+[492] <P class="">:
+Melihat penggunaan RAM/CPU VPS saat Hermes berpikir:
+----------------------------------------
+[494] <P class="">:
+(Memastikan VPS tidak crash/freeze saat Hermes memproses teks yang panjang).
+----------------------------------------
+[495] <P class="">:
+Mau mulai dari bagian mana dulu? Kita bisa buatkan prompt pertama yang sangat spesifik untuk kamu copy-paste langsung ke Hermes di VPS-mu sekarang.
+----------------------------------------
+[496] <SPAN class="user-query-container">:
+You said
+
+coba cek lagi kriteria lomba, kalo dari situ aku nyimpulin bahwa yang lebih penting bagaimana kita bisa set arsitektur hermes agar bisa berkomunikasi secara efektif dan autonomus untuk membangun COMOT MVP, apa benar begitu? Kalo benar strategi selanjutnya sebaiknya apa?
+----------------------------------------
+[497] <P class="query-text-line ng-star-inserted">:
+coba cek lagi kriteria lomba, kalo dari situ aku nyimpulin bahwa yang lebih penting bagaimana kita bisa set arsitektur hermes agar bisa berkomunikasi secara efektif dan autonomus untuk membangun COMOT MVP, apa benar begitu? Kalo benar strategi selanjutnya sebaiknya apa?
+----------------------------------------
+[498] <P class="">:
+Melihat dua screenshot kriteria lomba yang kamu kirim, kesimpulan kamu 100% tepat dan sangat jeli! Lomba ini bukan sekadar menilai aplikasi web jadi (frontend/backend biasa), melainkan menilai arsitektur sistem AI Multi-Agent yang berjalan di belakangnya. Fokus utama juri adalah bagaimana kamu mendesain sekumpulan agen AI (menggunakan Hermes di VPS Sumopod) agar bisa berbagi peran, berkomunikasi secara otonom, bernalar, dan menghasilkan output terstruktur yang valid.
+----------------------------------------
+[499] <P class="">:
+Berdasarkan syarat Apa yang Akan Dibangun dan Ekspektasi Teknis di gambar, berikut adalah bedah strategi dan arsitektur Multi-Agent khusus untuk mengeksekusi MVP COMOT:
+----------------------------------------
+[500] <H2 class="">:
+1. Arsitektur Multi-Agent COMOT yang Harus Dibangun
+----------------------------------------
+[501] <P class="">:
+Alih-alih memperlakukan Hermes sebagai satu chatbot tunggal, kita akan memecah Hermes ke dalam 4 Peran Agen Spesifik (Multi-Agent Workflow) yang saling berkomunikasi secara otonom:
+----------------------------------------
+[502] <DIV class="code-block ng-tns-c1345347775-614 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+[ Contractor/User ] 
+        │
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ 1. Project Coordinator Agent (The Brain)               │
+└───────────┬───────────────────────────────┬────────────┘
+            │                               │
+            ▼                               ▼
+┌──────────────────────────┐    ┌────────────────────────┐
+│ 2. Procurement Agent     │    │ 3. Material Forecaster │
+│    (Qhomemart API Match) │    │    (AI Analytics)      │
+┌──────────────────────────┐    ┌────────────────────────┐
+            │                               │
+            └───────────────┬───────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│ 4. Structured Output Guard (JSON Validator)            │
+└────────────────────────────────────────────────────────┘
+----------------------------------------
+[503] <H3 class="">:
+Breakdown Peran Agen:
+----------------------------------------
+[504] <P class="">:
+Project Coordinator Agent (The Brain): Agen utama yang menerima input/log dari lapangan, menentukan urgensi masalah, dan mendelegasikan tugas ke agen lain.
+----------------------------------------
+[505] <P class="">:
+Procurement Agent: Agen yang khusus mensimulasikan pencarian material ke API Qhomemart, mengecek stok, harga, dan mengalkulasi biaya pembelian.
+----------------------------------------
+[506] <P class="">:
+Material Forecaster (AI Reasoner): Agen yang menganalisis tren penggunaan proyek di lapangan dan menghitung risiko keterlambatan (apakah sisa material cukup untuk 3 hari ke depan?).
+----------------------------------------
+[507] <P class="">:
+Structured Output Guard: Agen terakhir yang bertugas membungkus seluruh hasil diskusi antar-agen menjadi format JSON terstruktur agar bisa dibaca langsung oleh sistem dashboard web.
+----------------------------------------
+[508] <H2 class="">:
+2. Strategi Eksekusi Selanjutnya di VPS Sumopod
+----------------------------------------
+[509] <P class="">:
+Untuk memenuhi poin "Komunikasi Antar Agent", "Log Interaksi", dan "Sistem Modular" dari kriteria lomba, kamu sebaiknya tidak meng-code sistem komunikasi ini dari nol.
+----------------------------------------
+[510] <P class="">:
+Gunakan framework Multi-Agent yang kompatibel dengan model lokal (Ollama/Hermes) di VPS-mu. Dua pilihan terbaik yang modular adalah CrewAI atau AutoGen (Python).
+----------------------------------------
+[511] <P class="">:
+Berikut langkah taktisnya:
+----------------------------------------
+[512] <H3 class="">:
+Langkah 1: Setup Framework Multi-Agent di VPS
+----------------------------------------
+[513] <P class="">:
+Masuk ke VPS Sumopod dan buat environment Python khusus untuk orkestrasi agen ini.
+----------------------------------------
+[514] <DIV class="code-block ng-tns-c1345347775-615 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+Bash
+# Buat direktori dan virtual environment
+mkdir comot-agents && cd comot-agents
+python3 -m venv venv
+source venv/bin/activate
+
+# Install CrewAI (sangat cocok untuk role-based multi-agent seperti kriteria lomba)
+pip install crewai
+----------------------------------------
+[515] <DIV class="formatted-code-block-internal-container ng-tns-c1345347775-615">:
+# Buat direktori dan virtual environment
+mkdir comot-agents && cd comot-agents
+python3 -m venv venv
+source venv/bin/activate
+
+# Install CrewAI (sangat cocok untuk role-based multi-agent seperti kriteria lomba)
+pip install crewai
+----------------------------------------
+[516] <SPAN class="hljs-comment">:
+# Buat direktori dan virtual environment
+----------------------------------------
+[518] <SPAN class="hljs-comment">:
+# Install CrewAI (sangat cocok untuk role-based multi-agent seperti kriteria lomba)
+----------------------------------------
+[519] <H3 class="">:
+Langkah 2: Mengonfigurasi Hermes Sebagai LLM Endpoint
+----------------------------------------
+[520] <P class="">:
+Pastikan CrewAI diarahkan ke model Hermes yang berjalan lokal di Ollama VPS-mu (memenuhi ekspektasi teknis Sistem Modular & Bebas pilih LLM).
+----------------------------------------
+[521] <H3 class="">:
+Langkah 3: Tulis Script Orkestrasi Agen (Contoh Konsep)
+----------------------------------------
+[522] <P class="">:
+Buat file app.py di VPS. Di sinilah letak penilaian utama lomba tersebut. Kamu mendefinisikan agen, tugas (tasks), dan cara mereka berkomunikasi.
+----------------------------------------
+[523] <P class="">:
+Berikut adalah draf logika agen yang bisa kamu eksekusi:
+----------------------------------------
+[524] <DIV class="code-block ng-tns-c1345347775-616 ng-animate-disabled ng-trigger ng-trigger-codeBlockRevealAnimation">:
+Python
+from crewai import Agent, Task, Crew, Process
+from langchain_community.llms import Ollama
+
+# 1. Inisialisasi Hermes dari Ollama lokal
+hermes_llm = Ollama(model="hermes3", base_url="http://localhost:11434")
+
+# 2. Definisikan Agen sesuai kriteria gambar (Multi-Agent Workflow)
+coordinator = Agent(
+    role='Project Coordinator',
+    goal='Mengoordinasikan kebutuhan logistik proyek rumah Rp5 Miliar',
+    backstory='Kamu adalah manajer proyek senior yang ahli melihat inefisiensi lapangan.',
+    verbose=True,
+    llm=hermes_llm
+)
+
+procurement_officer = Agent(
+    role='Qhomemart Procurement Specialist',
+    goal='Mencocokkan kebutuhan material dengan ketersediaan stok di Qhomemart API',
+    backstory='Kamu ahli dalam negosiasi harga, pelacakan pesanan, dan pemenuhan barang tepat waktu.',
+    verbose=True,
+    llm=hermes_llm
+)
+
+# 3. Definisikan Tugas & Ekspektasi Output (Mencakup Reasoning & Structured Output)
+task_analisis_keterlambatan = Task(
+    description='Analisis dampak jika pengiriman semen instan terlambat 3 hari pada proyek saat ini.',
+    expected_output='Format JSON dengan key: "status_risiko", "estimasi_kerugian_rupiah", "rekomendasi_tindakan".',
+    agent=coordinator
+)
+
+# 4. Jalankan Proses Komunikasi Antar Agent (Workflow & Orchestration)
+comot_crew = Crew(
+    agents=[coordinator, procurement_officer],
+    tasks=[task_analisis_keterlambatan],
+    process=Process.sequential # Agen berkomunikasi berurutan
+)
+
+result = comot_crew.kickoff()
+print(result)
+----------------------------------------
+[526] <DIV class="formatted-code-block-internal-container ng-tns-c1345347775-616">:
+from crewai import Agent, Task, Crew, Process
+from langchain_community.llms import Ollama
+
+# 1. Inisialisasi Hermes dari Ollama lokal
+hermes_llm = Ollama(model="hermes3", base_url="http://localhost:11434")
+
+# 2. Definisikan Agen sesuai kriteria gambar (Multi-Agent Workflow)
+coordinator = Agent(
+    role='Project Coordinator',
+    goal='Mengoordinasikan kebutuhan logistik proyek rumah Rp5 Miliar',
+    backstory='Kamu adalah manajer proyek senior yang ahli melihat inefisiensi lapangan.',
+    verbose=True,
+    llm=hermes_llm
+)
+
+procurement_officer = Agent(
+    role='Qhomemart Procurement Specialist',
+    goal='Mencocokkan kebutuhan material dengan ketersediaan stok di Qhomemart API',
+    backstory='Kamu ahli dalam negosiasi harga, pelacakan pesanan, dan pemenuhan barang tepat waktu.',
+    verbose=True,
+    llm=hermes_llm
+)
+
+# 3. Definisikan Tugas & Ekspektasi Output (Mencakup Reasoning & Structured Output)
+task_analisis_keterlambatan = Task(
+    description='Analisis dampak jika pengiriman semen instan terlambat 3 hari pada proyek saat ini.',
+    expected_output='Format JSON dengan key: "status_risiko", "estimasi_kerugian_rupiah", "rekomendasi_tindakan".',
+    agent=coordinator
+)
+
+# 4. Jalankan Proses Komunikasi Antar Agent (Workflow & Orchestration)
+comot_crew = Crew(
+    agents=[coordinator, procurement_officer],
+    tasks=[task_analisis_keterlambatan],
+    process=Process.sequential # Agen berkomunikasi berurutan
+)
+
+result = comot_crew.kickoff()
+print(result)
+----------------------------------------
+[528] <SPAN class="hljs-comment">:
+# 1. Inisialisasi Hermes dari Ollama lokal
+----------------------------------------
+[530] <SPAN class="hljs-string">:
+"http://localhost:11434"
+----------------------------------------
+[531] <SPAN class="hljs-comment">:
+# 2. Definisikan Agen sesuai kriteria gambar (Multi-Agent Workflow)
+----------------------------------------
+[532] <SPAN class="hljs-string">:
+'Project Coordinator'
+----------------------------------------
+[533] <SPAN class="hljs-string">:
+'Mengoordinasikan kebutuhan logistik proyek rumah Rp5 Miliar'
+----------------------------------------
+[534] <SPAN class="hljs-string">:
+'Kamu adalah manajer proyek senior yang ahli melihat inefisiensi lapangan.'
+----------------------------------------
+[535] <SPAN class="hljs-string">:
+'Qhomemart Procurement Specialist'
+----------------------------------------
+[536] <SPAN class="hljs-string">:
+'Mencocokkan kebutuhan material dengan ketersediaan stok di Qhomemart API'
+----------------------------------------
+[537] <SPAN class="hljs-string">:
+'Kamu ahli dalam negosiasi harga, pelacakan pesanan, dan pemenuhan barang tepat waktu.'
+----------------------------------------
+[538] <SPAN class="hljs-comment">:
+# 3. Definisikan Tugas & Ekspektasi Output (Mencakup Reasoning & Structured Output)
+----------------------------------------
+[539] <SPAN class="hljs-string">:
+'Analisis dampak jika pengiriman semen instan terlambat 3 hari pada proyek saat ini.'
+----------------------------------------
+[540] <SPAN class="hljs-string">:
+'Format JSON dengan key: "status_risiko", "estimasi_kerugian_rupiah", "rekomendasi_tindakan".'
+----------------------------------------
+[541] <SPAN class="hljs-comment">:
+# 4. Jalankan Proses Komunikasi Antar Agent (Workflow & Orchestration)
+----------------------------------------
+[542] <SPAN class="hljs-comment">:
+# Agen berkomunikasi berurutan
+----------------------------------------
+[543] <H2 class="">:
+3. Poin Emas untuk Menangkan Lomba (Sesuai Gambar)
+----------------------------------------
+[544] <P class="">:
+Jika kamu ingin juri terpukau saat presentasi, highlight 3 hal teknis ini yang membuktikan kamu memenuhi kriteria mereka:
+----------------------------------------
+[545] <P class="">:
+Log Interaksi (Gambar 2): Karena CrewAI/AutoGen merekam semua percakapan antar-agen di terminal, simpan log tersebut ke dalam file .txt atau .json. Tunjukkan ke juri: "Ini bukti otentik Agen 1 mendeteksi semen habis, lalu secara otonom mengirim pesan ke Agen 2 untuk mencari stok di Qhomemart tanpa campur tangan manusia."
+----------------------------------------
+[546] <P class="">:
+Reasoning & Decision (Gambar 1): Tunjukkan proses berpikir Hermes saat menghitung angka kerugian 3% yang kita diskusikan tadi. Biarkan agen menuliskan argumen logisnya sebelum mengeluarkan keputusan.
+----------------------------------------
+[547] <P class="">:
+Output Terstruktur (Gambar 1): Pastikan di akhir rantai komunikasi, agen selalu mengeluarkan format JSON yang bersih ({ "status": "aman" }) bukan teks obrolan biasa, agar juri melihat bahwa sistem ini siap diintegrasikan ke sistem nyata.
+----------------------------------------
+[548] <P class="">:
+Strategi ini langsung menyerang inti penilaian teknis lomba. Apakah kamu mau kita buatkan prompt sistem (system prompt) yang matang untuk masing-masing agen Hermes ini agar siap kamu masukkan ke script VPS?
+----------------------------------------
+[549] <SPAN class="user-query-container">:
+You said
+
+Dengan memecah agent menjadi 4 sub agent, bagaimana posisi aplikasi COMOT MVP yang dibuat, apakah tetap dibuat oleh agent, jika iya siapa? Atau jadi tidak perlu karena 4 sub agent ini yang akan mengakomodir tracking logistik dan pemesanan material di sisi kontraktor, jelaskan lebih detail
+----------------------------------------
+[550] <P class="query-text-line ng-star-inserted">:
+Dengan memecah agent menjadi 4 sub agent, bagaimana posisi aplikasi COMOT MVP yang dibuat, apakah tetap dibuat oleh agent, jika iya siapa? Atau jadi tidak perlu karena 4 sub agent ini yang
