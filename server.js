@@ -525,6 +525,12 @@ function chatWithHermes(userId, userMessage) {
       }
     }
 
+    // NVIDIA API strictly expects the conversation after 'system' to start with 'user'.
+    // If the valid history starts with 'assistant', drop it.
+    if (validHistory.length > 0 && validHistory[0].role === 'assistant') {
+      validHistory.shift();
+    }
+
     // Build messages array with system prompt
     const messages = [
       { role: 'system', content: HERMES_SYSTEM_PROMPT },
