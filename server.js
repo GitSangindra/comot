@@ -500,18 +500,35 @@ function chatWithHermes(userId, userMessage) {
     }
     const history = chatHistories.get(userId);
 
-    // Add user message to history
-    history.push({ role: 'user', content: userMessage });
+    // If the last message was also from a 'user' (e.g. previous API call failed), 
+    // replace it instead of pushing a duplicate 'user' role
+    if (history.length > 0 && history[history.length - 1].role === 'user') {
+      history[history.length - 1].content = userMessage;
+    } else {
+      history.push({ role: 'user', content: userMessage });
+    }
 
     // Keep only last 10 messages to manage context window
     if (history.length > 10) {
       history.splice(0, history.length - 10);
     }
 
+    // Ensure strict user/assistant alternation for NVIDIA API
+    const validHistory = [];
+    let expectedRole = 'user';
+    
+    // We walk backwards from the most recent (which is 'user') to ensure valid pairs
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].role === expectedRole) {
+        validHistory.unshift(history[i]);
+        expectedRole = expectedRole === 'user' ? 'assistant' : 'user';
+      }
+    }
+
     // Build messages array with system prompt
     const messages = [
       { role: 'system', content: HERMES_SYSTEM_PROMPT },
-      ...history
+      ...validHistory
     ];
 
     const payload = JSON.stringify({
